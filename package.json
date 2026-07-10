@@ -8,7 +8,7 @@
     "server"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "dev:client": "npm run dev --workspace client",
