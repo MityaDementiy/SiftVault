@@ -1,0 +1,10 @@
+{
+  "name": "@siftvault/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "echo \"TODO: server dev script\" && exit 0"
+  }
+}

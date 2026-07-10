@@ -1,0 +1,9 @@
+{
+  "name": "@siftvault/client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"TODO: client dev script\" && exit 0"
+  }
+}
