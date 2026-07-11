@@ -35,5 +35,8 @@ coverage/
 # misc
 *.tsbuildinfo
 
+# tanstack router generated route tree
+**/routeTree.gen.ts
+
 # claude code local state
 .claude/

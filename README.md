@@ -16,15 +16,16 @@ SiftVault/
 └── server/   # Express + Mongoose API
 ```
 
-Managed with npm workspaces.
+Managed with npm workspaces. Tasks are run through the root `Makefile`.
 
 ## Getting started
 
 ```bash
-npm install
-npm run dev:server   # start the API
-npm run dev:client   # start the frontend
+make install      # install all workspace dependencies
+make dev-client   # start the frontend at http://localhost:3000
 ```
+
+Run `make help` to list available commands.
 
 ## MVP scope
 
