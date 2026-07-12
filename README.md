@@ -5,7 +5,7 @@ RSS aggregator (MVP). TypeScript monorepo.
 ## Stack
 
 - **Frontend:** TanStack Start, TanStack Query, Tailwind CSS, Shadcn/ui
-- **Backend:** Node.js, Express, Mongoose
+- **Backend:** Node.js, Fastify, Mongoose
 - **Database:** MongoDB
 
 ## Structure
@@ -13,7 +13,7 @@ RSS aggregator (MVP). TypeScript monorepo.
 ```
 SiftVault/
 ├── client/   # TanStack Start frontend
-└── server/   # Express + Mongoose API
+└── server/   # Fastify + Mongoose API
 ```
 
 Managed with npm workspaces. Tasks are run through the root `Makefile`.
@@ -23,7 +23,12 @@ Managed with npm workspaces. Tasks are run through the root `Makefile`.
 ```bash
 make install      # install all workspace dependencies
 make dev-client   # start the frontend at http://localhost:3000
+make dev-server   # start the backend at http://localhost:3001
+make dev          # start both frontend and backend
+make build        # build both frontend and backend
 ```
+
+A Husky `pre-commit` hook runs `make build` (`npm run build`) to block commits that don't build.
 
 Run `make help` to list available commands.
 
