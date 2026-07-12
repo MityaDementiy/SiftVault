@@ -6,14 +6,18 @@ type HomeResponse = {
 }
 
 export const Route = createFileRoute('/')({
-  component: Home,
+  component: RouteComponent,
   loader: async (): Promise<HomeResponse> => {
     const response = await fetch(`${API_BASE_URL}/`)
     return response.json()
   },
 })
 
-function Home() {
+function RouteComponent() {
   const { message } = Route.useLoaderData()
+  return <Home message={message} />
+}
+
+export function Home({ message }: HomeResponse) {
   return <h1>{message}</h1>
 }

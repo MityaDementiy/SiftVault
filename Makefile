@@ -1,4 +1,4 @@
-.PHONY: help install dev-client dev-server dev build build-client build-server
+.PHONY: help install dev-client dev-server dev build build-client build-server test
 
 help:
 	@echo "SiftVault — available commands:"
@@ -9,6 +9,7 @@ help:
 	@echo "  make build         Build both frontend and backend"
 	@echo "  make build-client  Build the frontend"
 	@echo "  make build-server  Build the backend"
+	@echo "  make test          Run tests across all workspaces"
 
 install:
 	npm install
@@ -33,3 +34,6 @@ build-client:
 
 build-server:
 	npm run build -w @siftvault/server
+
+test:
+	npm test

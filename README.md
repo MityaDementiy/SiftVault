@@ -26,6 +26,7 @@ make dev-client   # start the frontend at http://localhost:3000
 make dev-server   # start the backend at http://localhost:3001
 make dev          # start both frontend and backend
 make build        # build both frontend and backend
+make test         # run tests across all workspaces
 ```
 
 A Husky `pre-commit` hook runs `make build` (`npm run build`) to block commits that don't build.
