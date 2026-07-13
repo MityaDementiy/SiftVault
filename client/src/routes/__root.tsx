@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react';
 import {
   Outlet,
   createRootRoute,
   HeadContent,
   Scripts,
-} from '@tanstack/react-router'
+} from '@tanstack/react-router';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,19 +15,19 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
-})
+});
 
 function RootComponent() {
   return (
     <RootDocument>
       <Outlet />
     </RootDocument>
-  )
+  );
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
@@ -36,5 +36,5 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-.PHONY: help install dev-client dev-server dev build build-client build-server test
+.PHONY: help install dev-client dev-server dev build build-client build-server test lint
 
 help:
 	@echo "SiftVault — available commands:"
@@ -10,6 +10,7 @@ help:
 	@echo "  make build-client  Build the frontend"
 	@echo "  make build-server  Build the backend"
 	@echo "  make test          Run tests across all workspaces"
+	@echo "  make lint          Run ESLint across all workspaces"
 
 install:
 	npm install
@@ -37,3 +38,6 @@ build-server:
 
 test:
 	npm test
+
+lint:
+	npm run lint
