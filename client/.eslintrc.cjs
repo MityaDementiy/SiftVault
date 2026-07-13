@@ -19,7 +19,7 @@ module.exports = {
       version: 'detect',
     },
   },
-  ignorePatterns: ['dist', 'routeTree.gen.ts', '.tanstack'],
+  ignorePatterns: ['dist', 'routeTree.gen.ts', '.tanstack', '.eslintrc.cjs'],
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
@@ -35,6 +35,18 @@ module.exports = {
         '**/*.test.ts',
         '**/*.test.tsx',
       ],
+    }],
+    'no-restricted-imports': ['error', {
+      paths: [{
+        name: 'react',
+        importNames: ['useState'],
+        message: 'useState is forbidden — use a Zustand store instead (see CLAUDE.md).',
+      }],
+    }],
+    'no-restricted-properties': ['error', {
+      object: 'React',
+      property: 'useState',
+      message: 'useState is forbidden — use a Zustand store instead (see CLAUDE.md).',
     }],
   },
 };

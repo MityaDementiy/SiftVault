@@ -56,7 +56,7 @@ A Husky `pre-commit` hook runs `npm run lint` then `npm test` — commits are bl
 ### State management (client)
 
 - **TanStack Query** for server/async data (fetching, caching, invalidation).
-- **Zustand** for all client state. Never use `useState` — always a Zustand store, split by domain (e.g. auth store, feeds store, UI store), not one global blob.
+- **Zustand** for all client state. Never use `useState` — always a Zustand store, split by domain (e.g. auth store, feeds store, UI store), not one global blob. Enforced by ESLint (`no-restricted-imports` / `no-restricted-properties` in `client/.eslintrc.cjs`) — importing or calling `useState` is a lint error, not just a convention.
 - Select only the slice a component needs, and use shallow comparison when selecting multiple values, to avoid re-renders:
   ```ts
   const name = useStore((s) => s.name);
@@ -72,6 +72,18 @@ A Husky `pre-commit` hook runs `npm run lint` then `npm test` — commits are bl
   ```
 - Memoize derived/computed values (selector-level or `useMemo`), don't recompute inline on every render.
 - Prefer declarative style and immutable updates (spread/produce, no in-place mutation) in store actions.
+
+### Code style
+
+- Import order: external (`node_modules`) imports first, then a blank line, then internal/relative imports. E.g.:
+  ```ts
+  import { useEffect } from 'react';
+  import { create } from 'zustand';
+
+  import { API_BASE_URL } from '../config';
+  import { useAuthStore } from './auth-store';
+  ```
+  Not currently enforced by ESLint (Airbnb's `import/order` groups builtin/external/internal together with no blank line required) — this is a manual convention until/unless it gets wired into `import/order`'s `pathGroups`/`newlines-between`.
 
 ### Server (Fastify)
 

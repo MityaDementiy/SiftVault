@@ -13,7 +13,7 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ['dist'],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
   rules: {
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
