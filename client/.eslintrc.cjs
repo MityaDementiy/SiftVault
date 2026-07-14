@@ -36,6 +36,7 @@ module.exports = {
         'vitest.setup.ts',
         '**/*.test.ts',
         '**/*.test.tsx',
+        'src/routes/__root.tsx',
       ],
     }],
     'no-restricted-imports': ['warn', {

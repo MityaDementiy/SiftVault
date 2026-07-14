@@ -6,6 +6,10 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  import('react-scan').then(({ scan }) => scan({ enabled: true }));
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
