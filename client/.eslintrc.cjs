@@ -9,6 +9,7 @@ module.exports = {
     'airbnb-typescript',
     'airbnb/hooks',
   ],
+  plugins: ['react-compiler'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
@@ -21,6 +22,7 @@ module.exports = {
   },
   ignorePatterns: ['dist', 'routeTree.gen.ts', '.tanstack', '.eslintrc.cjs'],
   rules: {
+    'react-compiler/react-compiler': 'error',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
     'import/prefer-default-export': 'off',
@@ -36,17 +38,51 @@ module.exports = {
         '**/*.test.tsx',
       ],
     }],
-    'no-restricted-imports': ['error', {
-      paths: [{
-        name: 'react',
-        importNames: ['useState'],
+    'no-restricted-imports': ['warn', {
+      patterns: [
+        {
+          group: ['react'],
+          importNames: ['useState'],
+          message: 'useState is forbidden — use a Zustand store instead (see CLAUDE.md).',
+        },
+        {
+          group: ['react'],
+          importNames: ['useMemo'],
+          message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need useMemo.',
+        },
+        {
+          group: ['react'],
+          importNames: ['useCallback'],
+          message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need useCallback.',
+        },
+        {
+          group: ['react'],
+          importNames: ['memo'],
+          message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need memo.',
+        },
+      ],
+    }],
+    'no-restricted-properties': ['warn',
+      {
+        object: 'React',
+        property: 'useState',
         message: 'useState is forbidden — use a Zustand store instead (see CLAUDE.md).',
-      }],
-    }],
-    'no-restricted-properties': ['error', {
-      object: 'React',
-      property: 'useState',
-      message: 'useState is forbidden — use a Zustand store instead (see CLAUDE.md).',
-    }],
+      },
+      {
+        object: 'React',
+        property: 'useMemo',
+        message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need useMemo.',
+      },
+      {
+        object: 'React',
+        property: 'useCallback',
+        message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need useCallback.',
+      },
+      {
+        object: 'React',
+        property: 'memo',
+        message: 'This project uses React Compiler, which handles memoization automatically — double check whether you actually need memo.',
+      },
+    ],
   },
 };
