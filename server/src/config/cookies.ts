@@ -1,0 +1,18 @@
+export const ACCESS_TOKEN_COOKIE_NAME = 'sv_access_token';
+export const REFRESH_TOKEN_COOKIE_NAME = 'sv_refresh_token';
+
+const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+const HOURS_PER_DAY = 24;
+const DAYS_PER_WEEK = 7;
+
+const ACCESS_TOKEN_TTL_MINUTES = 15;
+
+export const ACCESS_TOKEN_TTL_SECONDS = ACCESS_TOKEN_TTL_MINUTES * SECONDS_PER_MINUTE;
+export const REFRESH_TOKEN_TTL_SECONDS = DAYS_PER_WEEK
+  * HOURS_PER_DAY
+  * MINUTES_PER_HOUR
+  * SECONDS_PER_MINUTE;
+
+export const AUTH_COOKIE_PATH = '/';
+export const REFRESH_COOKIE_PATH = '/auth';

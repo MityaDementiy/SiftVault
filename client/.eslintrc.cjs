@@ -28,6 +28,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
     'react/require-default-props': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    '@typescript-eslint/no-throw-literal': 'off',
     '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
     'import/no-extraneous-dependencies': ['error', {
       devDependencies: [
@@ -86,4 +88,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['src/components/ui/**/*.tsx'],
+      rules: {
+        'no-restricted-imports': 'off',
+      },
+    },
+  ],
 };

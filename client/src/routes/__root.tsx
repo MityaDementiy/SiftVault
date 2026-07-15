@@ -10,6 +10,10 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 
+import { SiteHeader } from '@/components/site-header';
+import { authMeQueryOptions } from '@/features/auth/queries';
+import appCss from '../styles.css?url';
+
 if (import.meta.env.DEV && typeof window !== 'undefined') {
   import('react-scan').then(({ scan }) => scan({ enabled: true }));
 }
@@ -21,13 +25,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'SiftVault' },
     ],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(authMeQueryOptions),
   component: RootComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
+      <SiteHeader />
       <Outlet />
     </RootDocument>
   );
