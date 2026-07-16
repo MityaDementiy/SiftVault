@@ -12,6 +12,7 @@ import {
 
 import { SiteHeader } from '@/components/site-header';
 import { authMeQueryOptions } from '@/features/auth/queries';
+import en from '@/i18n/locales/en.json';
 import appCss from '../styles.css?url';
 
 if (import.meta.env.DEV && typeof window !== 'undefined') {
@@ -23,7 +24,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'SiftVault' },
+      { title: en.app.name },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),

@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
+import './i18n/i18n';
 import { routeTree } from './routeTree.gen';
 
 export function getRouter() {

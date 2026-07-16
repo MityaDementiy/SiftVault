@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   describe, expect, it, vi,
@@ -7,6 +7,7 @@ import {
 
 import { AUTH_ME_QUERY_KEY } from '@/features/auth/queries';
 import type { AuthUser } from '@/features/auth/types';
+import en from '@/i18n/locales/en.json';
 
 import { SiteHeader } from './site-header';
 
@@ -41,14 +42,26 @@ describe('SiteHeader', () => {
   it('shows register/sign-in links when logged out', () => {
     renderWithAuthState(null);
 
-    expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Register' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: en.siteHeader.signIn })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: en.siteHeader.register })).toBeInTheDocument();
   });
 
-  it('shows a greeting and logout button when logged in', () => {
+  it('shows a greeting and an add feed button when logged in', () => {
     renderWithAuthState(FAKE_USER);
 
-    expect(screen.getByText('Hello, alice!')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+    const greeting = en.siteHeader.greeting.replace('{{username}}', FAKE_USER.username);
+    expect(screen.getByText(greeting)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: en.addFeedDialog.trigger })).toBeInTheDocument();
+  });
+
+  it('reveals the logout option in a menu when the greeting is clicked', async () => {
+    renderWithAuthState(FAKE_USER);
+
+    const greeting = en.siteHeader.greeting.replace('{{username}}', FAKE_USER.username);
+    const trigger = screen.getByRole('button', { name: greeting });
+    fireEvent.pointerDown(trigger, { pointerType: 'mouse', button: 0 });
+    fireEvent.click(trigger);
+
+    expect(await screen.findByRole('menuitem', { name: en.siteHeader.logOut })).toBeInTheDocument();
   });
 });

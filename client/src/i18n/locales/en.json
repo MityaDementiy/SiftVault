@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "SiftVault"
+  },
+  "siteHeader": {
+    "signIn": "Sign in",
+    "register": "Register",
+    "logOut": "Log out",
+    "greeting": "Hello, {{username}}!"
+  },
+  "auth": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password"
+  },
+  "login": {
+    "title": "Sign in",
+    "description": "Welcome back to {{appName}}.",
+    "submit": "Sign in",
+    "noAccountPrompt": "Don't have an account?",
+    "registerLink": "Register"
+  },
+  "register": {
+    "title": "Create an account",
+    "description": "Register to start using {{appName}}.",
+    "usernameLabel": "Username",
+    "submit": "Register",
+    "hasAccountPrompt": "Already have an account?",
+    "signInLink": "Sign in"
+  },
+  "addFeedDialog": {
+    "trigger": "Add feed",
+    "title": "Add feed",
+    "description": "Subscribe to an RSS feed by URL.",
+    "urlLabel": "Feed URL",
+    "urlPlaceholder": "https://example.com/rss.xml",
+    "nameLabel": "Name (optional)",
+    "submit": "Add feed"
+  }
+}
