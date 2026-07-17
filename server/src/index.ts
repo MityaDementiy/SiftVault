@@ -4,7 +4,7 @@ import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
 import { serializerCompiler, validatorCompiler, type ZodTypeProvider } from 'fastify-type-provider-zod';
 
-import { env } from './config/env.js';
+import { env, IS_PRODUCTION } from './config/env.js';
 import mongoosePlugin from './plugins/mongoose.plugin.js';
 import swaggerPlugin from './plugins/swagger.plugin.js';
 import authenticatePlugin from './plugins/authenticate.plugin.js';
@@ -27,7 +27,9 @@ await app.register(mongoosePlugin);
 await app.register(cors, { origin: env.CLIENT_ORIGIN, credentials: true });
 await app.register(cookie);
 await app.register(rateLimit, { global: false });
-await app.register(swaggerPlugin);
+if (!IS_PRODUCTION) {
+  await app.register(swaggerPlugin);
+}
 await app.register(authenticatePlugin);
 await app.register(authRoutes, { prefix: AUTH_ROUTES_PREFIX });
 
