@@ -1,6 +1,9 @@
-import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
 import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
+import { userResponseSchema } from '../schemas/user.schema.js';
+import { errorResponseSchema } from '../schemas/error.schema.js';
 import { UserModel } from '../models/user.model.js';
 import { hashPassword, verifyPassword, DUMMY_PASSWORD_HASH } from '../utils/password.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
@@ -17,6 +20,9 @@ const AUTH_RATE_LIMIT_ROUTE_CONFIG = {
   config: { rateLimit: { max: AUTH_RATE_LIMIT_MAX, timeWindow: AUTH_RATE_LIMIT_WINDOW } },
 };
 
+const AUTH_TAGS = ['Auth'];
+const USER_RESPONSE_SCHEMA = z.object({ user: userResponseSchema });
+
 const UNAUTHORIZED_BODY = { error: 'Unauthorized' };
 const INVALID_CREDENTIALS_BODY = { error: 'InvalidCredentials' };
 
@@ -29,9 +35,19 @@ const isDuplicateKeyError = (error: unknown): error is MongoDuplicateKeyError =>
   error instanceof Error && (error as MongoDuplicateKeyError).code === 11000
 );
 
-const authRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.post('/register', AUTH_RATE_LIMIT_ROUTE_CONFIG, async (request, reply) => {
-    const { email, username, password } = registerSchema.parse(request.body);
+const authRoutes: FastifyPluginAsyncZod = async (fastify) => {
+  fastify.post('/register', {
+    ...AUTH_RATE_LIMIT_ROUTE_CONFIG,
+    schema: {
+      tags: AUTH_TAGS,
+      body: registerSchema,
+      response: {
+        [HTTP_CREATED]: USER_RESPONSE_SCHEMA,
+        [HTTP_CONFLICT]: errorResponseSchema,
+      },
+    },
+  }, async (request, reply) => {
+    const { email, username, password } = request.body;
     const passwordHash = await hashPassword(password);
 
     let user;
@@ -50,8 +66,18 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     reply.code(HTTP_CREATED).send({ user });
   });
 
-  fastify.post('/login', AUTH_RATE_LIMIT_ROUTE_CONFIG, async (request, reply) => {
-    const { email, password } = loginSchema.parse(request.body);
+  fastify.post('/login', {
+    ...AUTH_RATE_LIMIT_ROUTE_CONFIG,
+    schema: {
+      tags: AUTH_TAGS,
+      body: loginSchema,
+      response: {
+        [HTTP_OK]: USER_RESPONSE_SCHEMA,
+        [HTTP_UNAUTHORIZED]: errorResponseSchema,
+      },
+    },
+  }, async (request, reply) => {
+    const { email, password } = request.body;
     const user = await UserModel.findOne({ email }).select('+passwordHash');
     const isValidPassword = await verifyPassword(
       password,
@@ -67,12 +93,23 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     reply.code(HTTP_OK).send({ user });
   });
 
-  fastify.post('/logout', async (_request, reply) => {
+  fastify.post('/logout', {
+    schema: { tags: AUTH_TAGS },
+  }, async (_request, reply) => {
     clearAuthCookies(reply);
     reply.code(HTTP_NO_CONTENT).send();
   });
 
-  fastify.post('/refresh', AUTH_RATE_LIMIT_ROUTE_CONFIG, async (request, reply) => {
+  fastify.post('/refresh', {
+    ...AUTH_RATE_LIMIT_ROUTE_CONFIG,
+    schema: {
+      tags: AUTH_TAGS,
+      response: {
+        [HTTP_NO_CONTENT]: z.null(),
+        [HTTP_UNAUTHORIZED]: errorResponseSchema,
+      },
+    },
+  }, async (request, reply) => {
     const token: string | undefined = request.cookies[REFRESH_TOKEN_COOKIE_NAME];
 
     if (!token) {
@@ -83,13 +120,22 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { sub } = verifyRefreshToken(token);
       setAccessCookie(reply, signAccessToken(sub));
-      reply.code(HTTP_NO_CONTENT).send();
+      reply.code(HTTP_NO_CONTENT).send(null);
     } catch {
       reply.code(HTTP_UNAUTHORIZED).send(UNAUTHORIZED_BODY);
     }
   });
 
-  fastify.get('/me', { preHandler: fastify.authenticate }, async (request, reply) => {
+  fastify.get('/me', {
+    preHandler: fastify.authenticate,
+    schema: {
+      tags: AUTH_TAGS,
+      response: {
+        [HTTP_OK]: USER_RESPONSE_SCHEMA,
+        [HTTP_UNAUTHORIZED]: errorResponseSchema,
+      },
+    },
+  }, async (request, reply) => {
     const user = await UserModel.findById(request.userId);
 
     if (!user) {
