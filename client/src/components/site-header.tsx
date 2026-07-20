@@ -33,6 +33,9 @@ export function SiteHeader() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/feeds">{t('feedsPage.navLink')}</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
                   disabled={logoutMutation.isPending}

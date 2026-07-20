@@ -63,5 +63,6 @@ describe('SiteHeader', () => {
     fireEvent.click(trigger);
 
     expect(await screen.findByRole('menuitem', { name: en.siteHeader.logOut })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: en.feedsPage.navLink })).toBeInTheDocument();
   });
 });

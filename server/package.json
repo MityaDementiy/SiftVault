@@ -23,6 +23,7 @@
     "fastify-type-provider-zod": "^7.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
+    "rss-parser": "^3.13.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

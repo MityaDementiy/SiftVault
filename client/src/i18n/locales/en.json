@@ -35,5 +35,11 @@
     "urlPlaceholder": "https://example.com/rss.xml",
     "nameLabel": "Name (optional)",
     "submit": "Add feed"
+  },
+  "feedsPage": {
+    "navLink": "My feeds",
+    "title": "My feeds",
+    "empty": "You haven't subscribed to any feeds yet.",
+    "unsubscribe": "Unsubscribe"
   }
 }

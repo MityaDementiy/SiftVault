@@ -11,18 +11,31 @@ import {
 } from '@/components/ui/dialog';
 import { useUiStore } from '@/stores/ui-store';
 import { addFeedSchema, type AddFeedFormValues } from '@/features/feeds/schemas';
+import { useCreateFeedMutation } from '@/features/feeds/mutations';
+import { FeedApiError, mapFeedErrorToMessage, DEFAULT_FEED_ERROR_MESSAGE } from '@/features/feeds/api';
 
 export function AddFeedDialog() {
   const { t } = useTranslation();
   const isOpen = useUiStore((s) => s.isAddFeedDialogOpen);
+  const createFeedMutation = useCreateFeedMutation();
 
   const {
-    register, handleSubmit, reset, formState: { errors },
+    register, handleSubmit, reset, setError, formState: { errors },
   } = useForm<AddFeedFormValues>({ resolver: zodResolver(addFeedSchema) });
 
-  const onSubmit = handleSubmit(() => {
-    reset();
-    useUiStore.getState().setAddFeedDialogOpen(false);
+  const onSubmit = handleSubmit((values) => {
+    createFeedMutation.mutate(values, {
+      onSuccess: () => {
+        reset();
+        useUiStore.getState().setAddFeedDialogOpen(false);
+      },
+      onError: (error) => {
+        const message = error instanceof FeedApiError
+          ? mapFeedErrorToMessage(error)
+          : DEFAULT_FEED_ERROR_MESSAGE;
+        setError('url', { message });
+      },
+    });
   });
 
   const handleOpenChange = (open: boolean) => {
@@ -61,10 +74,12 @@ export function AddFeedDialog() {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="feed-title">{t('addFeedDialog.nameLabel')}</Label>
-            <Input id="feed-title" type="text" autoComplete="off" {...register('title')} />
+            <Input id="feed-title" type="text" autoComplete="off" {...register('name')} />
           </div>
           <DialogFooter>
-            <Button type="submit">{t('addFeedDialog.submit')}</Button>
+            <Button type="submit" disabled={createFeedMutation.isPending}>
+              {t('addFeedDialog.submit')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -9,9 +9,11 @@ import mongoosePlugin from './plugins/mongoose.plugin.js';
 import swaggerPlugin from './plugins/swagger.plugin.js';
 import authenticatePlugin from './plugins/authenticate.plugin.js';
 import authRoutes from './routes/auth.routes.js';
+import feedRoutes from './routes/feed.routes.js';
 
 const HOST = '0.0.0.0';
 const AUTH_ROUTES_PREFIX = '/auth';
+const FEED_ROUTES_PREFIX = '/feeds';
 
 const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
 
@@ -32,6 +34,7 @@ if (!IS_PRODUCTION) {
 }
 await app.register(authenticatePlugin);
 await app.register(authRoutes, { prefix: AUTH_ROUTES_PREFIX });
+await app.register(feedRoutes, { prefix: FEED_ROUTES_PREFIX });
 
 app.get('/', async () => ({ message: 'Hello, SiftVault!' }));
 
