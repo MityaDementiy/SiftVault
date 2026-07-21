@@ -14,6 +14,7 @@ import feedRoutes from './routes/feed.routes.js';
 const HOST = '0.0.0.0';
 const AUTH_ROUTES_PREFIX = '/auth';
 const FEED_ROUTES_PREFIX = '/feeds';
+const CORS_ALLOWED_METHODS = ['GET', 'POST', 'DELETE'];
 
 const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
 
@@ -26,7 +27,11 @@ app.setErrorHandler((error, _request, reply) => {
 });
 
 await app.register(mongoosePlugin);
-await app.register(cors, { origin: env.CLIENT_ORIGIN, credentials: true });
+await app.register(cors, {
+  origin: env.CLIENT_ORIGIN,
+  credentials: true,
+  methods: CORS_ALLOWED_METHODS,
+});
 await app.register(cookie);
 await app.register(rateLimit, { global: false });
 if (!IS_PRODUCTION) {

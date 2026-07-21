@@ -18,7 +18,7 @@ export class FeedApiError extends Error {
 const fetchJson = (path: string, init?: RequestInit): Promise<Response> => fetch(`${API_BASE_URL}${path}`, {
   ...init,
   credentials: 'include',
-  headers: { 'Content-Type': 'application/json', ...init?.headers },
+  headers: init?.body ? { 'Content-Type': 'application/json', ...init.headers } : init?.headers,
 });
 
 const throwFeedApiError = async (response: Response): Promise<never> => {
