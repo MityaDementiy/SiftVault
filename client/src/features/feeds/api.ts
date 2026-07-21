@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '@/config';
 
-import type { Feed, FeedErrorBody } from './types';
+import type { Feed, FeedItem, FeedErrorBody } from './types';
 import type { AddFeedFormValues } from './schemas';
 
 export class FeedApiError extends Error {
@@ -46,6 +46,17 @@ export const fetchFeeds = async (): Promise<Feed[]> => {
 
   const { feeds } = await response.json() as { feeds: Feed[] };
   return feeds;
+};
+
+export const fetchFeedItems = async (): Promise<FeedItem[]> => {
+  const response = await fetchJson('/feeds/items');
+
+  if (!response.ok) {
+    return throwFeedApiError(response);
+  }
+
+  const { items } = await response.json() as { items: FeedItem[] };
+  return items;
 };
 
 export const unsubscribeFeed = async (id: string): Promise<void> => {

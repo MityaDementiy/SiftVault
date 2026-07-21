@@ -41,8 +41,6 @@ await app.register(authenticatePlugin);
 await app.register(authRoutes, { prefix: AUTH_ROUTES_PREFIX });
 await app.register(feedRoutes, { prefix: FEED_ROUTES_PREFIX });
 
-app.get('/', async () => ({ message: 'Hello, SiftVault!' }));
-
 try {
   await app.listen({ port: env.PORT, host: HOST });
 } catch (error) {

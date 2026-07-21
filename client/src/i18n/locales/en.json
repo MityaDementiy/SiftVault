@@ -41,5 +41,9 @@
     "title": "My feeds",
     "empty": "You haven't subscribed to any feeds yet.",
     "unsubscribe": "Unsubscribe"
+  },
+  "home": {
+    "guestGreeting": "Hello, {{appName}}!",
+    "empty": "No feeds yet"
   }
 }

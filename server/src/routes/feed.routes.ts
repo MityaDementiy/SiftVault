@@ -1,17 +1,21 @@
 import { z } from 'zod';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
-import { createFeedSchema, feedParamsSchema, feedResponseSchema } from '../schemas/feed.schema.js';
+import {
+  createFeedSchema, feedParamsSchema, feedResponseSchema, feedItemResponseSchema,
+} from '../schemas/feed.schema.js';
 import { errorResponseSchema } from '../schemas/error.schema.js';
 import { FeedModel } from '../models/feed.model.js';
-import { fetchFeedTitle, FeedFetchError } from '../utils/rss.js';
+import { fetchFeedTitle, fetchFeedItems, FeedFetchError } from '../utils/rss.js';
 import {
   HTTP_OK, HTTP_CREATED, HTTP_NO_CONTENT, HTTP_BAD_REQUEST, HTTP_NOT_FOUND, HTTP_CONFLICT,
 } from '../constants/http-status.js';
 
 const FEED_TAGS = ['Feeds'];
+const FEED_ITEMS_PER_FEED_LIMIT = 20;
 const FEED_RESPONSE_SCHEMA = z.object({ feed: feedResponseSchema });
 const FEEDS_RESPONSE_SCHEMA = z.object({ feeds: z.array(feedResponseSchema) });
+const FEED_ITEMS_RESPONSE_SCHEMA = z.object({ items: z.array(feedItemResponseSchema) });
 
 const INVALID_FEED_URL_BODY = { error: 'InvalidFeedUrl' };
 const FEED_ALREADY_EXISTS_BODY = { error: 'FeedAlreadyExists' };
@@ -38,6 +42,34 @@ const feedRoutes: FastifyPluginAsyncZod = async (fastify) => {
   }, async (request, reply) => {
     const feeds = await FeedModel.find({ userId: request.userId }).sort({ createdAt: -1 });
     reply.code(HTTP_OK).send({ feeds });
+  });
+
+  fastify.get('/items', {
+    schema: {
+      tags: FEED_TAGS,
+      response: {
+        [HTTP_OK]: FEED_ITEMS_RESPONSE_SCHEMA,
+      },
+    },
+  }, async (request, reply) => {
+    const feeds = await FeedModel.find({ userId: request.userId }).sort({ createdAt: -1 });
+
+    const results = await Promise.allSettled(feeds.map(async (feed) => {
+      const items = await fetchFeedItems(feed.url);
+      return items
+        .slice(0, FEED_ITEMS_PER_FEED_LIMIT)
+        .map((item) => ({ ...item, source: feed.name }));
+    }));
+
+    const items = results.flatMap((result) => {
+      if (result.status === 'rejected') {
+        request.log.warn(result.reason, 'Failed to fetch feed items');
+        return [];
+      }
+      return result.value;
+    });
+
+    reply.code(HTTP_OK).send({ items });
   });
 
   fastify.post('/', {

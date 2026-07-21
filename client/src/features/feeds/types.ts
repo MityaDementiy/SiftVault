@@ -6,6 +6,12 @@ export interface Feed {
   updatedAt: string;
 }
 
+export interface FeedItem {
+  title: string;
+  link: string;
+  source: string;
+}
+
 export type FeedErrorBody =
   | { error: 'InvalidFeedUrl' }
   | { error: 'FeedAlreadyExists' }

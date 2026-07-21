@@ -22,5 +22,11 @@ export const feedResponseSchema = z.object({
   updatedAt: z.date(),
 });
 
+export const feedItemResponseSchema = z.object({
+  title: z.string(),
+  link: z.url(),
+  source: z.string(),
+});
+
 export type CreateFeedInput = z.infer<typeof createFeedSchema>;
 export type FeedParams = z.infer<typeof feedParamsSchema>;
