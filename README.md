@@ -7,7 +7,7 @@ RSS aggregator (MVP). TypeScript monorepo.
 
 ## Stack
 
-- **Frontend:** TanStack Start, TanStack Query, Tailwind CSS, Shadcn/ui
+- **Frontend:** TanStack Start, TanStack Query, Zustand, Tailwind CSS, Shadcn/ui
 - **Backend:** Node.js, Fastify, Mongoose
 - **Database:** MongoDB
 
@@ -23,7 +23,11 @@ Managed with npm workspaces. Tasks are run through the root `Makefile`.
 
 ## Getting started
 
+Requires Node >=24 (see `.nvmrc`) and a running MongoDB instance.
+
 ```bash
+cp server/.env.example server/.env   # fill in MONGODB_URI, JWT secrets, etc.
+
 make install      # install all workspace dependencies
 make dev-client   # start the frontend at http://localhost:3000
 make dev-server   # start the backend at http://localhost:3001
@@ -32,6 +36,8 @@ make build        # build both frontend and backend
 make test         # run tests across all workspaces
 make lint         # run ESLint across all workspaces
 ```
+
+API docs (Swagger UI) are served at `http://localhost:3001/docs` in development.
 
 ## Linting
 
@@ -43,8 +49,10 @@ Run `make help` to list available commands.
 
 ## MVP scope
 
-- Auth: user registration & login
+- Auth: user registration & login (JWT access/refresh tokens in cookies)
 - Subscriptions: add/remove RSS feeds
 - Parsing: fetch titles & links ("Title — Source")
-- Read status: track after click
+- Home page: shows latest items from subscribed feeds
 - Responsive, mobile-friendly UI
+
+Not yet implemented: per-item read-status tracking.
