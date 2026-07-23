@@ -26,6 +26,7 @@ export const feedItemResponseSchema = z.object({
   title: z.string(),
   link: z.url(),
   source: z.string(),
+  imageUrl: z.url().optional(),
 });
 
 export type CreateFeedInput = z.infer<typeof createFeedSchema>;

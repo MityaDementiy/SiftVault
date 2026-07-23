@@ -45,5 +45,16 @@
   "home": {
     "guestGreeting": "Hello, {{appName}}!",
     "empty": "No feeds yet"
+  },
+  "siftedItem": {
+    "saveForLater": "Save for later",
+    "sifted": "Sifted",
+    "imagePlaceholderAlt": "No image available"
+  },
+  "siftedPage": {
+    "navLink": "Sifted",
+    "title": "Sifted",
+    "empty": "You haven't sifted anything yet.",
+    "remove": "Remove"
   }
 }

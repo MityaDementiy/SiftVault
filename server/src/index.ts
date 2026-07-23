@@ -10,10 +10,12 @@ import swaggerPlugin from './plugins/swagger.plugin.js';
 import authenticatePlugin from './plugins/authenticate.plugin.js';
 import authRoutes from './routes/auth.routes.js';
 import feedRoutes from './routes/feed.routes.js';
+import siftedItemRoutes from './routes/sifted-item.routes.js';
 
 const HOST = '0.0.0.0';
 const AUTH_ROUTES_PREFIX = '/auth';
 const FEED_ROUTES_PREFIX = '/feeds';
+const SIFTED_ITEM_ROUTES_PREFIX = '/sifted-items';
 const CORS_ALLOWED_METHODS = ['GET', 'POST', 'DELETE'];
 
 const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
@@ -40,6 +42,7 @@ if (!IS_PRODUCTION) {
 await app.register(authenticatePlugin);
 await app.register(authRoutes, { prefix: AUTH_ROUTES_PREFIX });
 await app.register(feedRoutes, { prefix: FEED_ROUTES_PREFIX });
+await app.register(siftedItemRoutes, { prefix: SIFTED_ITEM_ROUTES_PREFIX });
 
 try {
   await app.listen({ port: env.PORT, host: HOST });

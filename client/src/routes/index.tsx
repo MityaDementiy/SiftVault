@@ -3,17 +3,26 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Card, CardHeader, CardTitle, CardDescription,
+  Card, CardHeader, CardTitle, CardDescription, CardFooter,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ItemThumbnail } from '@/components/item-thumbnail';
+import { cn } from '@/lib/utils';
 import { authMeQueryOptions } from '@/features/auth/queries';
 import { feedItemsQueryOptions } from '@/features/feeds/queries';
 import type { FeedItem } from '@/features/feeds/types';
+import { siftedItemsQueryOptions } from '@/features/sifted-items/queries';
+import { useCreateSiftedItemMutation } from '@/features/sifted-items/mutations';
 
 export const Route = createFileRoute('/')({
   loader: async ({ context }) => {
     const user = await context.queryClient.ensureQueryData(authMeQueryOptions);
     if (user) {
-      await context.queryClient.ensureQueryData(feedItemsQueryOptions);
+      await Promise.all([
+        context.queryClient.ensureQueryData(feedItemsQueryOptions),
+        context.queryClient.ensureQueryData(siftedItemsQueryOptions),
+      ]);
     }
   },
   component: RouteComponent,
@@ -26,7 +35,10 @@ function RouteComponent() {
 
 function AuthenticatedHome() {
   const { data: items } = useSuspenseQuery(feedItemsQueryOptions);
-  return <FeedItemsList items={items} />;
+  const { data: siftedItems } = useSuspenseQuery(siftedItemsQueryOptions);
+  const siftedLinks = new Set(siftedItems.map((siftedItem) => siftedItem.link));
+
+  return <FeedItemsList items={items} siftedLinks={siftedLinks} />;
 }
 
 export function GuestHome() {
@@ -40,7 +52,12 @@ export function GuestHome() {
   );
 }
 
-export function FeedItemsList({ items }: { items: FeedItem[] }) {
+const EMPTY_SIFTED_LINKS: Set<string> = new Set();
+
+export function FeedItemsList({
+  items,
+  siftedLinks = EMPTY_SIFTED_LINKS,
+}: { items: FeedItem[]; siftedLinks?: Set<string> }) {
   const { t } = useTranslation();
 
   if (items.length === 0) {
@@ -55,23 +72,54 @@ export function FeedItemsList({ items }: { items: FeedItem[] }) {
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="flex flex-col gap-3">
         {items.map((item) => (
-          <Card key={item.link}>
-            <CardHeader>
-              <CardTitle>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {item.title}
-                </a>
-              </CardTitle>
-              <CardDescription>{item.source}</CardDescription>
-            </CardHeader>
-          </Card>
+          <FeedItemCard key={item.link} item={item} isSifted={siftedLinks.has(item.link)} />
         ))}
       </div>
     </div>
+  );
+}
+
+function FeedItemCard({ item, isSifted }: { item: FeedItem; isSifted: boolean }) {
+  const { t } = useTranslation();
+  const createSiftedItemMutation = useCreateSiftedItemMutation();
+
+  const handleSave = () => {
+    createSiftedItemMutation.mutate({
+      title: item.title, link: item.link, source: item.source, imageUrl: item.imageUrl,
+    });
+  };
+
+  return (
+    <Card className={cn(isSifted && 'ring-2 ring-sifted')}>
+      <ItemThumbnail src={item.imageUrl} alt={item.title} />
+      <CardHeader>
+        <CardTitle>
+          <a
+            href={item.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            {item.title}
+          </a>
+        </CardTitle>
+        <CardDescription>{item.source}</CardDescription>
+      </CardHeader>
+      <CardFooter className="justify-end">
+        {isSifted ? (
+          <Badge variant="sifted">{t('siftedItem.sifted')}</Badge>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={createSiftedItemMutation.isPending}
+            onClick={handleSave}
+          >
+            {t('siftedItem.saveForLater')}
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
   );
 }

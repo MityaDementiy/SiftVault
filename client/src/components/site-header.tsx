@@ -36,6 +36,9 @@ export function SiteHeader() {
                 <DropdownMenuItem asChild>
                   <Link to="/feeds">{t('feedsPage.navLink')}</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/sifted">{t('siftedPage.navLink')}</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
                   disabled={logoutMutation.isPending}
