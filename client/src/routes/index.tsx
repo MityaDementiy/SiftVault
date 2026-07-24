@@ -2,13 +2,9 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Card, CardHeader, CardTitle, CardDescription, CardFooter,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ItemThumbnail } from '@/components/item-thumbnail';
-import { cn } from '@/lib/utils';
+import { FeedItemCard } from '@/components/feed-item-card';
 import { authMeQueryOptions } from '@/features/auth/queries';
 import { feedItemsQueryOptions } from '@/features/feeds/queries';
 import type { FeedItem } from '@/features/feeds/types';
@@ -72,54 +68,44 @@ export function FeedItemsList({
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="flex flex-col gap-3">
         {items.map((item) => (
-          <FeedItemCard key={item.link} item={item} isSifted={siftedLinks.has(item.link)} />
+          <SiftableFeedItemCard key={item.link} item={item} isSifted={siftedLinks.has(item.link)} />
         ))}
       </div>
     </div>
   );
 }
 
-function FeedItemCard({ item, isSifted }: { item: FeedItem; isSifted: boolean }) {
+function SiftableFeedItemCard({ item, isSifted }: { item: FeedItem; isSifted: boolean }) {
   const { t } = useTranslation();
   const createSiftedItemMutation = useCreateSiftedItemMutation();
 
   const handleSave = () => {
     createSiftedItemMutation.mutate({
-      title: item.title, link: item.link, source: item.source, imageUrl: item.imageUrl,
+      title: item.title,
+      link: item.link,
+      source: item.source,
+      imageUrl: item.imageUrl,
+      content: item.content,
     });
   };
 
   return (
-    <Card className={cn(isSifted && 'ring-2 ring-sifted')}>
-      <ItemThumbnail src={item.imageUrl} alt={item.title} />
-      <CardHeader>
-        <CardTitle>
-          <a
-            href={item.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            {item.title}
-          </a>
-        </CardTitle>
-        <CardDescription>{item.source}</CardDescription>
-      </CardHeader>
-      <CardFooter className="justify-end">
-        {isSifted ? (
-          <Badge variant="sifted">{t('siftedItem.sifted')}</Badge>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={createSiftedItemMutation.isPending}
-            onClick={handleSave}
-          >
-            {t('siftedItem.saveForLater')}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+    <FeedItemCard
+      item={item}
+      highlighted={isSifted}
+      footer={isSifted ? (
+        <Badge variant="sifted">{t('siftedItem.sifted')}</Badge>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={createSiftedItemMutation.isPending}
+          onClick={handleSave}
+        >
+          {t('siftedItem.saveForLater')}
+        </Button>
+      )}
+    />
   );
 }

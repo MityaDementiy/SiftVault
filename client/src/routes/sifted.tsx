@@ -2,11 +2,8 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Card, CardHeader, CardTitle, CardDescription, CardFooter,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ItemThumbnail } from '@/components/item-thumbnail';
+import { FeedItemCard } from '@/components/feed-item-card';
 import { authMeQueryOptions } from '@/features/auth/queries';
 import { siftedItemsQueryOptions } from '@/features/sifted-items/queries';
 import { useRemoveSiftedItemMutation } from '@/features/sifted-items/mutations';
@@ -37,22 +34,11 @@ function SiftedRoute() {
       ) : (
         <div className="flex flex-col gap-3">
           {siftedItems.map((siftedItem) => (
-            <Card key={siftedItem.id} className="ring-2 ring-sifted">
-              <ItemThumbnail src={siftedItem.imageUrl} alt={siftedItem.title} />
-              <CardHeader>
-                <CardTitle>
-                  <a
-                    href={siftedItem.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    {siftedItem.title}
-                  </a>
-                </CardTitle>
-                <CardDescription>{siftedItem.source}</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-end">
+            <FeedItemCard
+              key={siftedItem.id}
+              item={siftedItem}
+              highlighted
+              footer={(
                 <Button
                   type="button"
                   variant="destructive"
@@ -62,8 +48,8 @@ function SiftedRoute() {
                 >
                   {t('siftedPage.remove')}
                 </Button>
-              </CardFooter>
-            </Card>
+              )}
+            />
           ))}
         </div>
       )}

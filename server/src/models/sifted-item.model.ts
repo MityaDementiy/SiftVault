@@ -5,6 +5,7 @@ import {
   SIFTED_ITEM_LINK_MAX_LENGTH,
   SIFTED_ITEM_SOURCE_MAX_LENGTH,
   SIFTED_ITEM_IMAGE_URL_MAX_LENGTH,
+  SIFTED_ITEM_CONTENT_MAX_LENGTH,
 } from '../schemas/sifted-item.constants.js';
 
 const siftedItemSchema = new Schema(
@@ -37,6 +38,10 @@ const siftedItemSchema = new Schema(
       trim: true,
       maxlength: SIFTED_ITEM_IMAGE_URL_MAX_LENGTH,
     },
+    content: {
+      type: String,
+      maxlength: SIFTED_ITEM_CONTENT_MAX_LENGTH,
+    },
   },
   { timestamps: true },
 );
@@ -47,10 +52,10 @@ siftedItemSchema.index({ userId: 1, createdAt: -1 });
 siftedItemSchema.set('toJSON', {
   transform: (_doc, ret) => {
     const {
-      _id: id, title, link, source, imageUrl, createdAt, updatedAt,
+      _id: id, title, link, source, imageUrl, content, createdAt, updatedAt,
     } = ret;
     return {
-      id: id.toString(), title, link, source, imageUrl, createdAt, updatedAt,
+      id: id.toString(), title, link, source, imageUrl, content, createdAt, updatedAt,
     };
   },
 });

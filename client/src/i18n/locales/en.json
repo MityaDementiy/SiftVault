@@ -51,6 +51,12 @@
     "sifted": "Sifted",
     "imagePlaceholderAlt": "No image available"
   },
+  "feedItemCard": {
+    "readHere": "Read here",
+    "collapse": "Collapse",
+    "openSource": "Open source",
+    "noContent": "No preview available for this article."
+  },
   "siftedPage": {
     "navLink": "Sifted",
     "title": "Sifted",

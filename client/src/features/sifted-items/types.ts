@@ -4,6 +4,7 @@ export interface SiftedItem {
   link: string;
   source: string;
   imageUrl?: string;
+  content?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,6 +14,7 @@ export interface CreateSiftedItemInput {
   link: string;
   source: string;
   imageUrl?: string;
+  content?: string;
 }
 
 export type SiftedItemErrorBody =

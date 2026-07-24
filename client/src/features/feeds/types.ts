@@ -11,6 +11,7 @@ export interface FeedItem {
   link: string;
   source: string;
   imageUrl?: string;
+  content?: string;
 }
 
 export type FeedErrorBody =

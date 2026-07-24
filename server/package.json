@@ -24,12 +24,14 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "rss-parser": "^3.13.0",
+    "sanitize-html": "^2.17.6",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.1",
+    "@types/sanitize-html": "^2.16.1",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3"
   }

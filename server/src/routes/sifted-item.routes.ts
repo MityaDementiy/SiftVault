@@ -53,13 +53,13 @@ const siftedItemRoutes: FastifyPluginAsyncZod = async (fastify) => {
     },
   }, async (request, reply) => {
     const {
-      title, link, source, imageUrl,
+      title, link, source, imageUrl, content,
     } = request.body;
 
     let siftedItem;
     try {
       siftedItem = await SiftedItemModel.create({
-        userId: request.userId, title, link, source, imageUrl,
+        userId: request.userId, title, link, source, imageUrl, content,
       });
     } catch (error) {
       if (isDuplicateKeyError(error)) {

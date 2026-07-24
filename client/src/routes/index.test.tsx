@@ -1,9 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import {
+  render, screen, fireEvent,
+} from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { describe, expect, it } from 'vitest';
+import {
+  describe, expect, it, beforeEach,
+} from 'vitest';
 
 import en from '@/i18n/locales/en.json';
 import type { FeedItem } from '@/features/feeds/types';
+import { useUiStore } from '@/stores/ui-store';
 
 import { GuestHome, FeedItemsList } from './index';
 
@@ -11,6 +16,10 @@ const renderWithQueryClient = (ui: React.ReactElement) => {
   const queryClient = new QueryClient();
   return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 };
+
+beforeEach(() => {
+  useUiStore.setState({ expandedItemLinks: new Set() });
+});
 
 describe('GuestHome', () => {
   it('renders the guest greeting as a heading', () => {
@@ -28,7 +37,7 @@ describe('FeedItemsList', () => {
     expect(screen.getByText(en.home.empty)).toBeInTheDocument();
   });
 
-  it('renders each item as a link opening in a new tab, with its source', () => {
+  it('renders each item with its title, source and a link to open the source in a new tab', () => {
     const items: FeedItem[] = [
       { title: 'Crude Oil rises', link: 'https://example.com/oil', source: 'Bloomberg' },
       { title: 'Markets rally', link: 'https://example.com/markets', source: 'Reuters' },
@@ -37,12 +46,38 @@ describe('FeedItemsList', () => {
     renderWithQueryClient(<FeedItemsList items={items} />);
 
     items.forEach((item) => {
-      const link = screen.getByRole('link', { name: item.title });
+      expect(screen.getByText(item.title)).toBeInTheDocument();
+      expect(screen.getByText(item.source)).toBeInTheDocument();
+
+      const link = screen.getAllByRole('link', { name: en.feedItemCard.openSource })
+        .find((candidate) => candidate.getAttribute('href') === item.link);
       expect(link).toHaveAttribute('href', item.link);
       expect(link).toHaveAttribute('target', '_blank');
       expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-      expect(screen.getByText(item.source)).toBeInTheDocument();
     });
+  });
+
+  it('expands an item to show its content when the read-here button is clicked', () => {
+    const items: FeedItem[] = [
+      {
+        title: 'Crude Oil rises',
+        link: 'https://example.com/oil',
+        source: 'Bloomberg',
+        content: '<p>Oil prices climbed today.</p>',
+      },
+    ];
+
+    renderWithQueryClient(<FeedItemsList items={items} />);
+
+    expect(screen.queryByText('Oil prices climbed today.')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: en.feedItemCard.readHere }));
+
+    expect(screen.getByText('Oil prices climbed today.')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: en.feedItemCard.collapse }));
+
+    expect(screen.queryByText('Oil prices climbed today.')).not.toBeInTheDocument();
   });
 
   it('shows a save-for-later button for items that have not been sifted yet', () => {
