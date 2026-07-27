@@ -5,7 +5,7 @@
     "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["node", "vite/client", "@testing-library/jest-dom"],
+    "types": ["node", "vite/client", "vite-plugin-pwa/client", "@testing-library/jest-dom"],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
@@ -17,5 +17,12 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
+  "include": [
+    "src",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "pwa-assets.config.ts",
+    "scripts"
+  ]
 }

@@ -15,8 +15,14 @@ import { authMeQueryOptions } from '@/features/auth/queries';
 import en from '@/i18n/locales/en.json';
 import appCss from '../styles.css?url';
 
+const THEME_COLOR = '#1a1a1a';
+
 if (import.meta.env.DEV && typeof window !== 'undefined') {
   import('react-scan').then(({ scan }) => scan({ enabled: true }));
+}
+
+if (import.meta.env.PROD && typeof window !== 'undefined') {
+  import('virtual:pwa-register').then(({ registerSW }) => registerSW({ immediate: true }));
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -25,8 +31,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: en.app.name },
+      { name: 'theme-color', content: THEME_COLOR },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon-180x180.png' },
+      { rel: 'manifest', href: '/manifest.webmanifest' },
+    ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(authMeQueryOptions),
   component: RootComponent,

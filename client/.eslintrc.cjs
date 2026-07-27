@@ -39,6 +39,8 @@ module.exports = {
         '**/*.test.ts',
         '**/*.test.tsx',
         'src/routes/__root.tsx',
+        '**/pwa-assets.config.ts',
+        '**/scripts/**',
       ],
     }],
     'no-restricted-imports': ['warn', {
@@ -93,6 +95,16 @@ module.exports = {
       files: ['src/components/ui/**/*.tsx'],
       rules: {
         'no-restricted-imports': 'off',
+      },
+    },
+    {
+      files: ['**/scripts/**/*.mjs'],
+      env: {
+        node: true,
+        browser: false,
+      },
+      rules: {
+        'no-console': 'off',
       },
     },
   ],
