@@ -51,8 +51,10 @@ Run `make help` to list available commands.
 
 - Auth: user registration & login (JWT access/refresh tokens in cookies)
 - Subscriptions: add/remove RSS feeds
-- Parsing: fetch titles & links ("Title — Source")
-- Home page: shows latest items from subscribed feeds
+- Parsing: fetch feed items (title, link, source, image, sanitized HTML content)
+- Home page: shows latest items from subscribed feeds, with inline "read here" expand
+- Sifted items: save/remove feed items per user, view them on the `/sifted` page
+- PWA: installable app with manifest, generated icons, and offline support via a service worker
 - Responsive, mobile-friendly UI
 
 Not yet implemented: per-item read-status tracking.
