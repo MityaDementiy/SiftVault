@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "postbuild": "node scripts/generate-sw.mjs",
-    "start": "srvx serve --entry dist/server/server.js --static dist/client --prod",
+    "start": "srvx serve --dir dist --entry server/server.js --static client --prod",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
