@@ -10,10 +10,13 @@ import {
   REFRESH_COOKIE_PATH,
 } from '../config/cookies.js';
 
+const CROSS_SITE_SAME_SITE: 'none' = 'none';
+const SAME_SITE_SAME_SITE: 'lax' = 'lax';
+
 const baseCookieOptions = {
   httpOnly: true,
   secure: IS_PRODUCTION,
-  sameSite: 'lax' as const,
+  sameSite: IS_PRODUCTION ? CROSS_SITE_SAME_SITE : SAME_SITE_SAME_SITE,
   domain: env.COOKIE_DOMAIN,
 };
 
