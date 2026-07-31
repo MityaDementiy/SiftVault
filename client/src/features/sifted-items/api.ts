@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/config';
+import { apiFetch } from '@/lib/http';
 
 import type { SiftedItem, CreateSiftedItemInput, SiftedItemErrorBody } from './types';
 
@@ -14,18 +14,12 @@ export class SiftedItemApiError extends Error {
   }
 }
 
-const fetchJson = (path: string, init?: RequestInit): Promise<Response> => fetch(`${API_BASE_URL}${path}`, {
-  ...init,
-  credentials: 'include',
-  headers: init?.body ? { 'Content-Type': 'application/json', ...init.headers } : init?.headers,
-});
-
 const throwSiftedItemApiError = async (response: Response): Promise<never> => {
   throw new SiftedItemApiError(response.status, await response.json() as SiftedItemErrorBody);
 };
 
 export const fetchSiftedItems = async (): Promise<SiftedItem[]> => {
-  const response = await fetchJson('/sifted-items');
+  const response = await apiFetch('/sifted-items');
 
   if (!response.ok) {
     return throwSiftedItemApiError(response);
@@ -36,7 +30,7 @@ export const fetchSiftedItems = async (): Promise<SiftedItem[]> => {
 };
 
 export const createSiftedItem = async (input: CreateSiftedItemInput): Promise<SiftedItem> => {
-  const response = await fetchJson('/sifted-items', { method: 'POST', body: JSON.stringify(input) });
+  const response = await apiFetch('/sifted-items', { method: 'POST', body: JSON.stringify(input) });
 
   if (!response.ok) {
     return throwSiftedItemApiError(response);
@@ -47,7 +41,7 @@ export const createSiftedItem = async (input: CreateSiftedItemInput): Promise<Si
 };
 
 export const removeSiftedItem = async (id: string): Promise<void> => {
-  const response = await fetchJson(`/sifted-items/${id}`, { method: 'DELETE' });
+  const response = await apiFetch(`/sifted-items/${id}`, { method: 'DELETE' });
 
   if (!response.ok) {
     await throwSiftedItemApiError(response);

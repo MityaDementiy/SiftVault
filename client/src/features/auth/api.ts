@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/config';
+import { apiFetch, getIncomingCookieHeader, mergeCookieHeader } from '@/lib/http';
 
 import type { AuthUser, AuthErrorBody } from './types';
 import type { RegisterFormValues, LoginFormValues } from './schemas';
@@ -15,14 +15,10 @@ export class AuthApiError extends Error {
   }
 }
 
-const fetchJson = (path: string, init?: RequestInit): Promise<Response> => fetch(`${API_BASE_URL}${path}`, {
-  ...init,
-  credentials: 'include',
-  headers: { 'Content-Type': 'application/json', ...init?.headers },
-});
+const IS_SERVER = typeof window === 'undefined';
 
-const requestCurrentUser = async (): Promise<AuthUser | null> => {
-  const response = await fetchJson('/auth/me');
+const requestCurrentUser = async (cookie?: string): Promise<AuthUser | null> => {
+  const response = await apiFetch('/auth/me', {}, cookie);
 
   if (!response.ok) {
     return null;
@@ -32,25 +28,26 @@ const requestCurrentUser = async (): Promise<AuthUser | null> => {
   return user;
 };
 
-const refreshSession = async (): Promise<boolean> => {
-  const response = await fetchJson('/auth/refresh', { method: 'POST' });
-  return response.ok;
-};
-
 export const fetchCurrentUser = async (): Promise<AuthUser | null> => {
-  const user = await requestCurrentUser();
+  const incomingCookie = IS_SERVER ? await getIncomingCookieHeader() : undefined;
+
+  const user = await requestCurrentUser(incomingCookie);
 
   if (user) {
     return user;
   }
 
-  const refreshed = await refreshSession();
+  const refreshResponse = await apiFetch('/auth/refresh', { method: 'POST' }, incomingCookie);
 
-  if (!refreshed) {
+  if (!refreshResponse.ok) {
     return null;
   }
 
-  return requestCurrentUser();
+  const refreshedCookie = IS_SERVER
+    ? mergeCookieHeader(incomingCookie, refreshResponse.headers.getSetCookie())
+    : undefined;
+
+  return requestCurrentUser(refreshedCookie);
 };
 
 const parseAuthError = async (response: Response): Promise<AuthApiError> => {
@@ -59,7 +56,7 @@ const parseAuthError = async (response: Response): Promise<AuthApiError> => {
 };
 
 export const registerUser = async (input: RegisterFormValues): Promise<AuthUser> => {
-  const response = await fetchJson('/auth/register', { method: 'POST', body: JSON.stringify(input) });
+  const response = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify(input) });
 
   if (!response.ok) {
     throw await parseAuthError(response);
@@ -70,7 +67,7 @@ export const registerUser = async (input: RegisterFormValues): Promise<AuthUser>
 };
 
 export const loginUser = async (input: LoginFormValues): Promise<AuthUser> => {
-  const response = await fetchJson('/auth/login', { method: 'POST', body: JSON.stringify(input) });
+  const response = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify(input) });
 
   if (!response.ok) {
     throw await parseAuthError(response);
@@ -81,7 +78,7 @@ export const loginUser = async (input: LoginFormValues): Promise<AuthUser> => {
 };
 
 export const logoutUser = async (): Promise<void> => {
-  await fetchJson('/auth/logout', { method: 'POST' });
+  await apiFetch('/auth/logout', { method: 'POST' });
 };
 
 interface AuthFieldError {

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/config';
+import { apiFetch } from '@/lib/http';
 
 import type { Feed, FeedItem, FeedErrorBody } from './types';
 import type { AddFeedFormValues } from './schemas';
@@ -15,19 +15,13 @@ export class FeedApiError extends Error {
   }
 }
 
-const fetchJson = (path: string, init?: RequestInit): Promise<Response> => fetch(`${API_BASE_URL}${path}`, {
-  ...init,
-  credentials: 'include',
-  headers: init?.body ? { 'Content-Type': 'application/json', ...init.headers } : init?.headers,
-});
-
 const throwFeedApiError = async (response: Response): Promise<never> => {
   throw new FeedApiError(response.status, await response.json() as FeedErrorBody);
 };
 
 export const createFeed = async (input: AddFeedFormValues): Promise<Feed> => {
   const name = input.name?.trim() || undefined;
-  const response = await fetchJson('/feeds', { method: 'POST', body: JSON.stringify({ url: input.url, name }) });
+  const response = await apiFetch('/feeds', { method: 'POST', body: JSON.stringify({ url: input.url, name }) });
 
   if (!response.ok) {
     return throwFeedApiError(response);
@@ -38,7 +32,7 @@ export const createFeed = async (input: AddFeedFormValues): Promise<Feed> => {
 };
 
 export const fetchFeeds = async (): Promise<Feed[]> => {
-  const response = await fetchJson('/feeds');
+  const response = await apiFetch('/feeds');
 
   if (!response.ok) {
     return throwFeedApiError(response);
@@ -49,7 +43,7 @@ export const fetchFeeds = async (): Promise<Feed[]> => {
 };
 
 export const fetchFeedItems = async (): Promise<FeedItem[]> => {
-  const response = await fetchJson('/feeds/items');
+  const response = await apiFetch('/feeds/items');
 
   if (!response.ok) {
     return throwFeedApiError(response);
@@ -60,7 +54,7 @@ export const fetchFeedItems = async (): Promise<FeedItem[]> => {
 };
 
 export const unsubscribeFeed = async (id: string): Promise<void> => {
-  const response = await fetchJson(`/feeds/${id}`, { method: 'DELETE' });
+  const response = await apiFetch(`/feeds/${id}`, { method: 'DELETE' });
 
   if (!response.ok) {
     await throwFeedApiError(response);
