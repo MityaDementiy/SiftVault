@@ -1,4 +1,6 @@
-import { API_BASE_URL } from '@/config';
+import { createServerOnlyFn } from '@tanstack/react-start';
+
+import { API_BASE_URL, API_PROXY_PREFIX } from '@/config';
 
 const IS_SERVER = typeof window === 'undefined';
 
@@ -12,19 +14,21 @@ const buildHeaders = (init: RequestInit, cookie: string | undefined): HeadersIni
 // cookie jar — `credentials: 'include'` is a no-op there. Forward the incoming request's
 // cookies by hand, and forward any Set-Cookie the API sends back (e.g. a refreshed access
 // token) onto the SSR response so the browser's cookie jar stays in sync.
-export const getIncomingCookieHeader = async (): Promise<string | undefined> => {
+type CookieHeader = string | undefined;
+
+export const getIncomingCookieHeader = createServerOnlyFn(async (): Promise<CookieHeader> => {
   const { getRequestHeader } = await import('@tanstack/react-start/server');
   return getRequestHeader('cookie');
-};
+});
 
-const forwardSetCookies = async (response: Response): Promise<void> => {
+const forwardSetCookies = createServerOnlyFn(async (response: Response): Promise<void> => {
   const setCookies = response.headers.getSetCookie();
   if (setCookies.length === 0) {
     return;
   }
   const { setResponseHeader } = await import('@tanstack/react-start/server');
   setResponseHeader('set-cookie', setCookies);
-};
+});
 
 export const mergeCookieHeader = (base: string | undefined, setCookies: string[]): string => {
   const jar = new Map((base ?? '').split(';').map((pair) => pair.trim()).filter(Boolean).map((pair) => {
@@ -47,7 +51,7 @@ export const apiFetch = async (
   cookieOverride?: string,
 ): Promise<Response> => {
   if (!IS_SERVER) {
-    return fetch(`${API_BASE_URL}${path}`, {
+    return fetch(`${API_PROXY_PREFIX}${path}`, {
       ...init,
       credentials: 'include',
       headers: buildHeaders(init, undefined),
