@@ -11,8 +11,11 @@ import authenticatePlugin from './plugins/authenticate.plugin.js';
 import authRoutes from './routes/auth.routes.js';
 import feedRoutes from './routes/feed.routes.js';
 import siftedItemRoutes from './routes/sifted-item.routes.js';
+import { HTTP_OK } from './constants/http-status.js';
 
 const HOST = '0.0.0.0';
+const HEALTH_ROUTE = '/health';
+const HEALTH_RESPONSE_BODY = { status: 'ok' };
 const AUTH_ROUTES_PREFIX = '/auth';
 const FEED_ROUTES_PREFIX = '/feeds';
 const SIFTED_ITEM_ROUTES_PREFIX = '/sifted-items';
@@ -39,6 +42,10 @@ await app.register(rateLimit, { global: false });
 if (!IS_PRODUCTION) {
   await app.register(swaggerPlugin);
 }
+app.get(HEALTH_ROUTE, async (_request, reply) => {
+  reply.status(HTTP_OK).send(HEALTH_RESPONSE_BODY);
+});
+
 await app.register(authenticatePlugin);
 await app.register(authRoutes, { prefix: AUTH_ROUTES_PREFIX });
 await app.register(feedRoutes, { prefix: FEED_ROUTES_PREFIX });

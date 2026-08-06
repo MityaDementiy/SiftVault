@@ -1,0 +1,19 @@
+name: Keep Render services warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+env:
+  CLIENT_URL: https://siftvaultj.onrender.com
+  SERVER_HEALTH_URL: https://siftvaultjj.onrender.com/health
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping client
+        run: curl -sf "$CLIENT_URL" -o /dev/null
+      - name: Ping server
+        run: curl -sf "$SERVER_HEALTH_URL" -o /dev/null
