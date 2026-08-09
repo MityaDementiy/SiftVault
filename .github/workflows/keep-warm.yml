@@ -7,7 +7,7 @@ on:
 
 env:
   CLIENT_URL: https://siftvaultj.onrender.com
-  SERVER_HEALTH_URL: https://siftvaultjj.onrender.com/health
+  SERVER_HEALTH_URL: https://siftvaultj.onrender.com/health
 
 jobs:
   ping:
