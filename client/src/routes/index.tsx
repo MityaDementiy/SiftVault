@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,7 @@ import { FeedItemCard } from '@/components/feed-item-card';
 import { authMeQueryOptions } from '@/features/auth/queries';
 import { feedItemsQueryOptions } from '@/features/feeds/queries';
 import type { FeedItem } from '@/features/feeds/types';
+import { healthQueryOptions } from '@/features/health/queries';
 import { siftedItemsQueryOptions } from '@/features/sifted-items/queries';
 import { useCreateSiftedItemMutation } from '@/features/sifted-items/mutations';
 
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const { data: user } = useSuspenseQuery(authMeQueryOptions);
+  useQuery(healthQueryOptions);
   return user ? <AuthenticatedHome /> : <GuestHome />;
 }
 
