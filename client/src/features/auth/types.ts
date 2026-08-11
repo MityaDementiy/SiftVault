@@ -16,4 +16,5 @@ export type AuthErrorBody =
   | { error: 'UsernameTaken' }
   | { error: 'InvalidCredentials' }
   | { error: 'Unauthorized' }
-  | { error: 'ValidationError'; issues: ValidationIssue[] };
+  | { error: 'ValidationError'; issues: ValidationIssue[] }
+  | { error: 'UnknownError' };

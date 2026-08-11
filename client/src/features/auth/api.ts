@@ -50,8 +50,20 @@ export const fetchCurrentUser = async (): Promise<AuthUser | null> => {
   return requestCurrentUser(refreshedCookie);
 };
 
+const UNKNOWN_ERROR_BODY: AuthErrorBody = { error: 'UnknownError' };
+
 const parseAuthError = async (response: Response): Promise<AuthApiError> => {
-  const body = await response.json() as AuthErrorBody;
+  const rawBody = await response.clone().text();
+
+  let body: AuthErrorBody;
+  try {
+    body = JSON.parse(rawBody) as AuthErrorBody;
+  } catch {
+    body = UNKNOWN_ERROR_BODY;
+  }
+
+  console.error(`[auth] ${response.status} ${response.url}:`, rawBody || '(empty body)');
+
   return new AuthApiError(response.status, body);
 };
 
