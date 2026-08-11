@@ -4,6 +4,8 @@ import { API_BASE_URL, API_PROXY_PREFIX } from '@/config';
 
 const NO_BODY_METHODS = ['GET', 'HEAD'];
 const HOP_BY_HOP_RESPONSE_HEADERS = ['content-encoding', 'content-length', 'transfer-encoding', 'connection'];
+const PROXY_ERROR_STATUS = 502;
+const PROXY_ERROR_BODY = { error: 'upstream_unreachable' };
 
 const startHandlerFetch = createStartHandler(defaultStreamHandler);
 
@@ -26,12 +28,18 @@ const proxyToApi = async (
   const targetUrl = `${API_BASE_URL}${pathname.slice(API_PROXY_PREFIX.length)}${search}`;
   const hasBody = !NO_BODY_METHODS.includes(request.method);
 
-  const upstreamResponse = await fetch(targetUrl, {
-    method: request.method,
-    headers: request.headers,
-    body: hasBody ? request.body : undefined,
-    duplex: hasBody ? 'half' : undefined,
-  } as RequestInit);
+  let upstreamResponse: Response;
+  try {
+    upstreamResponse = await fetch(targetUrl, {
+      method: request.method,
+      headers: request.headers,
+      body: hasBody ? request.body : undefined,
+      duplex: hasBody ? 'half' : undefined,
+    } as RequestInit);
+  } catch (error) {
+    console.error(`[proxy] ${request.method} ${targetUrl} failed:`, error);
+    return Response.json(PROXY_ERROR_BODY, { status: PROXY_ERROR_STATUS });
+  }
 
   return new Response(upstreamResponse.body, {
     status: upstreamResponse.status,
